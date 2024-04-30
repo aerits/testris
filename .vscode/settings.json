@@ -1,0 +1,9 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/var/home/diced/Documents/c-stuff/testris",
+            "binaryPath": "/var/home/diced/Documents/c-stuff/testris/testris",
+            "binaryArgs": []
+        }
+    ]
+}
