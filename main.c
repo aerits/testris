@@ -1,17 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_timer.h>
 
-int gridwidth=10;
-int gridheight=20;
-int grid[10][20];
-int fallingBlock[10][20];
+int gridwidth=12;
+int gridheight=24;
+int grid[12][24];
+int fallingBlock[12][24];
 int blockPos = 1;
-int blockPosX = 2;
+int blockPosX = 4;
 
 struct shape {
   int pos[4][2];
@@ -26,11 +27,11 @@ void displayGrid(int grid[gridwidth][gridheight]){
   }
 }
 
-#define CHK(value) grid[shape.pos[value][0]+x][shape.pos[value][1]+y] == 1
-#define CHKCHK CHK(0) || CHK(1) || CHK(2) || CHK(3)
+#define CHK(value, value2) grid[shape.pos[value][0]+x][shape.pos[value][1]+y] == value2
+#define CHKCHK(a) CHK(0, a) || CHK(1, a) || CHK(2, a) || CHK(3, a)
 
 bool collisionCheck(int grid[gridwidth][gridheight], int x, int y, struct shape shape){
-  if(CHKCHK || x > gridwidth || x < 0 || y > gridheight || y < 0){
+  if(CHKCHK(1) || CHKCHK(3) || x > gridwidth || x < 0 || y > gridheight || y < 0){
     return true;
   }
   return false;
@@ -143,6 +144,8 @@ if (SDL_Init(SDL_INIT_VIDEO) < 0){
 
   // initialize variables
 
+  srand(time(NULL));
+
   struct shape shapes[7];
 
   #define SHPCRTR(shape, x1, y1, x2, y2, x3, y3, x4, y4) {shapes[shape].pos[0][0] = x1; \
@@ -154,18 +157,21 @@ if (SDL_Init(SDL_INIT_VIDEO) < 0){
       shapes[shape].pos[3][0] = x4; \
       shapes[shape].pos[3][1] = y4;}
 
-  SHPCRTR(0, 0, 0, 1, 0, 1, 1, 2, 0); // t shape
+  SHPCRTR(0, 0, 0, 1, 0, 0, -1, -1, 0); // t shape
   SHPCRTR(1, 0, 0, 1, 0, 1, 1, 0, 1); // o shape
-  SHPCRTR(2, 0, 0, 0, 1, 0, 2, 0, 3); // i shape
+  SHPCRTR(2, 0, 0, 0, 1, 0, -1, 0, -2); // i shape
   SHPCRTR(3, -1, 0, 0, 0, 0, 1, 1, 1); // z shape
   SHPCRTR(6, 0, 0, 1, 0, 0, 1, -1, 1); // s shape
-  SHPCRTR(4, 0, 0, 0, 1, 0, 2, 1, 2); // L shape
-  SHPCRTR(5, 0, 0, 0, 1, 0, 2, -1, 2); // J shape
+  SHPCRTR(4, 0, 0, 0, -1, 0, 1, 1, 1); // L shape
+  SHPCRTR(5, 0, 0, 0, -1, 0, 1, -1, 1); // J shape
 
-  for (int i=0;i<12;i++){
-    for (int j=0;j<6;j++){
+  for (int i=0;i<gridheight;i++){
+    for (int j=0;j<gridwidth;j++){
       grid[j][i]=0;
       fallingBlock[j][i]=0;
+      if(j==0 || i==gridheight-1 || j==gridwidth-1){
+        grid[j][i]=3;
+      }
     }
   }
 
@@ -180,6 +186,9 @@ if (SDL_Init(SDL_INIT_VIDEO) < 0){
   int das = 1;
   int fastfall = 0;
   int currentShape = 0;
+  int slidetime = 10;
+  int lastslide = 0;
+  int onFloor = false;
 
   while(gaming) {
 
@@ -194,19 +203,23 @@ if (SDL_Init(SDL_INIT_VIDEO) < 0){
                   /* printf("keys are down"); */
                   if (event.key.keysym.sym == SDLK_UP) {
                     // Up Arrow
-                  } else if (event.key.keysym.sym == SDLK_DOWN && fps - lastMove > fastfall && !collisionCheck(grid, blockPosX, blockPos+1, shapes[currentShape])) {
+                    lastslide = fps;
+                  } else if (event.key.keysym.sym == SDLK_DOWN && fps - lastMove > fastfall && !collisionCheck(grid, blockPosX, blockPos, shapes[currentShape])) {
                     // Down Arrow
                     blockPos++;
+                    lastslide = fps;
                     lastMove = fps;
                     goto fastupdate;
-                  } else if (event.key.keysym.sym == SDLK_LEFT && fps - lastMove > das && !collisionCheck(grid, blockPosX-1, blockPos, shapes[currentShape])) {
+                  } else if (event.key.keysym.sym == SDLK_LEFT && fps - lastMove > das && !collisionCheck(grid, blockPosX-1, blockPos -1, shapes[currentShape])) {
                     // Left Arrow
                     blockPosX-=1;
+                    lastslide -= 1;
                     lastMove = fps;
                     goto fastupdate;
-                  } else if (event.key.keysym.sym == SDLK_RIGHT && fps - lastMove > das && !collisionCheck(grid,blockPosX+1,blockPos, shapes[currentShape])) {
+                  } else if (event.key.keysym.sym == SDLK_RIGHT && fps - lastMove > das && !collisionCheck(grid,blockPosX+1,blockPos -1, shapes[currentShape])) {
                     // Right Arrow
                     blockPosX+=1;
+                    lastslide -= 1;
                     lastMove = fps;
                     goto fastupdate;
                   }
@@ -219,71 +232,100 @@ if (SDL_Init(SDL_INIT_VIDEO) < 0){
     if(grid[2][0]==1){gaming=false;}
 
     SDL_Delay(50);
+    drawBlock(blockPosX, blockPos, shapes[currentShape]);
 
     if(fps % 7 == 0){
       fastupdate:
       // spawn block in 3rd column
       for (int i=0;i<gridheight;i++){
+        int a = 0;
         for (int j=0;j<gridwidth;j++){
           fallingBlock[j][i]=0;
-          printf("%d ", grid[j][i]);
+          if (grid[j][i]==1){
+            a++;
+          }
+          /* printf("%d ", grid[j][i]); */
         }
-        printf("\n");
+        /* printf("\n"); */
+        if(a==10){
+          // clear the line
+          for(int k=0;i-k>0;k++){
+            for (int j=0;j<gridwidth;j++){
+              grid[j][i-k] = grid[j][i-k-1];
+            }
+          }
+        }
       }
       drawBlock(blockPosX, blockPos, shapes[currentShape]);
 
       /* fallingBlock[blockPosX][0+blockPos+1] = 1; */
       /* fallingBlock[blockPosX][1+blockPos+1] = 1; */
 
-      if(fps % 7 == 0){
+      if(fps % 7 == 0 && !onFloor){
         blockPos++;
         printf("%d", blockPos);
       }
+    }
+    if(collisionCheck(grid, blockPosX, blockPos, shapes[currentShape]) && !onFloor) {
+      onFloor = true;
+      lastslide = fps;
+    }
+    if(!collisionCheck(grid, blockPosX, blockPos, shapes[currentShape]) && onFloor) {
+      onFloor = false;
+      lastslide = fps;
+    }
 
-      if(blockPos > gridheight-2 || collisionCheck(grid, blockPosX, blockPos, shapes[currentShape])) {
-        addBackgroundBlock(blockPosX, blockPos-1, shapes[currentShape]);
-        blockPos=2;
-        blockPosX=2;
-        if(currentShape==6){currentShape=-1;}
-        currentShape++;
+    if(collisionCheck(grid, blockPosX, blockPos, shapes[currentShape]) && fps - lastslide > slidetime) {
+      onFloor = false;
+      addBackgroundBlock(blockPosX, blockPos-1, shapes[currentShape]);
+      blockPos=1;
+      blockPosX=4;
+      currentShape = rand() % 7;
+      if(collisionCheck(grid, blockPosX, blockPos+1, shapes[currentShape])){
+        gaming=false;
       }
+    }
 
-      /* printf("this is the block pos: %i\n", blockPos); */
+    /* printf("this is the block pos: %i\n", blockPos); */
 
-      SDL_SetRenderDrawColor(renderer, 255, 255, 255, 250);
-      SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 250);
+    SDL_RenderClear(renderer);
 
-      for (int i=0;i<gridwidth;i++){
-        for (int j=0;j<gridheight;j++){
+    for (int i=0;i<gridwidth;i++){
+      for (int j=0;j<gridheight;j++){
 
-        SDL_Rect rect;
-        rect.x = 0+i*32;
-        rect.y = 0+j*32;
-        rect.w = 32;
-        rect.h = 32;
+      SDL_Rect rect;
+      rect.x = 0+i*32;
+      rect.y = 0+j*32 - (32*4);
+      rect.w = 32;
+      rect.h = 32;
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        if(fallingBlock[i][j] == 0 && grid[i][j] == 0){
+      SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+      if(fallingBlock[i][j] == 0 && grid[i][j] == 0){
 
 
-          SDL_RenderDrawRect(renderer, &rect);
-        } else {
-          if(fallingBlock[i][j] == 1){
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-          }
-          SDL_RenderFillRect(renderer, &rect);
-        }
-        }
+        SDL_RenderDrawRect(renderer, &rect);
       }
+      else if (grid[i][j] == 3){
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+        SDL_RenderFillRect(renderer, &rect);
+      }
+      else {
+        if(fallingBlock[i][j] == 1){
+          SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        }
+        SDL_RenderFillRect(renderer, &rect);
+      }
+      }
+    }
 
-      // Render text
-      /* SDL_Rect textRect = {50, 50+blockPos, textSurface->w, textSurface->h}; // rectangle where the text is drawn */
-      /* SDL_RenderCopy(renderer, textTexture, NULL, &textRect); */
+    // Render text
+    /* SDL_Rect textRect = {50, 50+blockPos, textSurface->w, textSurface->h}; // rectangle where the text is drawn */
+    /* SDL_RenderCopy(renderer, textTexture, NULL, &textRect); */
 
-      SDL_RenderPresent(renderer);
+    SDL_RenderPresent(renderer);
 
     /* printf("gaming"); */
-    }
 
 
   }
