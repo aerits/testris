@@ -11,7 +11,7 @@ int gridwidth=12;
 int gridheight=24;
 int grid[12][24];
 int fallingBlock[12][24];
-int blockPos = 1;
+int blockPos = 5;
 int blockPosX = 4;
 
 struct shape {
@@ -70,17 +70,17 @@ for (int i=0;i<4;i++){\
 void addBackgroundBlock(int x, int y, struct shape shape) {
   int a = 0;
   /* recurse: */
-  /* if(!collisionCheck(grid, x, y, shape) && !(a==10)){ */
-  /*   /\* grid[x][y]=1; *\/ */
-  /*   /\* grid[x][y+1]=1; *\/ */
-  /*   /\* DRW(1, 0, 1) *\/ */
-  /*   a++; */
-  /*   goto recurse; */
-  /* } else { */
+  if(!collisionCheck(grid, x, y, shape) && !(a==10)){
+    /* grid[x][y]=1; */
+    /* grid[x][y+1]=1; */
+    DRW(1, 0, 0)
+    /* a++; */
+    /* goto recurse; */
+  } else {
     /* grid[x][y]=1; */
     /* grid[x][y-1]=1; */
     DRW(1, 0, 0-a)
-  /* } */
+  }
 }
 
 #undef DRW
@@ -91,7 +91,7 @@ void addBackgroundBlock(int x, int y, struct shape shape) {
 
 int main(int argc, char *argv[]) {
   // sdl boilerplate
-if (SDL_Init(SDL_INIT_VIDEO) < 0){
+  if (SDL_Init(SDL_INIT_VIDEO) < 0){
     printf("Couldn't initialize SDL: %s\n", SDL_GetError());
     return EXIT_FAILURE;
   }
@@ -146,7 +146,7 @@ if (SDL_Init(SDL_INIT_VIDEO) < 0){
 
   srand(time(NULL));
 
-  struct shape shapes[7];
+  struct shape shapes[28];
 
   #define SHPCRTR(shape, x1, y1, x2, y2, x3, y3, x4, y4) {shapes[shape].pos[0][0] = x1; \
       shapes[shape].pos[0][1] = y1; \
@@ -159,11 +159,35 @@ if (SDL_Init(SDL_INIT_VIDEO) < 0){
 
   SHPCRTR(0, 0, 0, 1, 0, 0, -1, -1, 0); // t shape
   SHPCRTR(1, 0, 0, 1, 0, 1, 1, 0, 1); // o shape
-  SHPCRTR(2, 0, 0, 0, 1, 0, -1, 0, -2); // i shape
-  SHPCRTR(3, -1, 0, 0, 0, 0, 1, 1, 1); // z shape
-  SHPCRTR(6, 0, 0, 1, 0, 0, 1, -1, 1); // s shape
-  SHPCRTR(4, 0, 0, 0, -1, 0, 1, 1, 1); // L shape
-  SHPCRTR(5, 0, 0, 0, -1, 0, 1, -1, 1); // J shape
+  SHPCRTR(2, -1, 0, 0, 0, 1, 0, 2, 0); // i shape
+  SHPCRTR(3, -1, 0, 0, 0, 0, 1, 1, 1); // s shape
+  SHPCRTR(6, 0, 0, 1, 0, 0, 1, -1, 1); // z shape
+  SHPCRTR(4, 0, 0, -1, 0, 1, 0, 1, -1); // L shape
+  SHPCRTR(5, 0, 0, -1, 0, 1, 0, -1, -1); // J shape
+
+  /* SHPCRTR(6, 0, 0, 1, 0, 0, -1, -1, 0); // t shape */
+  /* SHPCRTR(7, 0, 0, 1, 0, 1, 1, 0, 1); // o shape */
+  /* SHPCRTR(8, 0, 0, 0, 1, 0, -1, 0, -2); // i shape */
+  /* SHPCRTR(9, -1, 0, 0, 0, 0, 1, 1, 1); // s shape */
+  /* SHPCRTR(10, 0, 0, 1, 0, 0, 1, -1, 1); // z shape */
+  /* SHPCRTR(11, 0, 0, 0, -1, 0, 1, 1, 1); // L shape */
+  /* SHPCRTR(12, 0, 0, 0, -1, 0, 1, -1, 1); // J shape */
+
+  /* SHPCRTR(13, 0, 0, 1, 0, 0, -1, -1, 0); // t shape */
+  /* SHPCRTR(14, 0, 0, 1, 0, 1, 1, 0, 1); // o shape */
+  /* SHPCRTR(15, 0, 0, 0, 1, 0, -1, 0, -2); // i shape */
+  /* SHPCRTR(16, -1, 0, 0, 0, 0, 1, 1, 1); // s shape */
+  /* SHPCRTR(17, 0, 0, 1, 0, 0, 1, -1, 1); // z shape */
+  /* SHPCRTR(18, 0, 0, 0, -1, 0, 1, 1, 1); // L shape */
+  /* SHPCRTR(19, 0, 0, 0, -1, 0, 1, -1, 1); // J shape */
+
+  /* SHPCRTR(20, 0, 0, 1, 0, 0, -1, -1, 0); // t shape */
+  /* SHPCRTR(21, 0, 0, 1, 0, 1, 1, 0, 1); // o shape */
+  /* SHPCRTR(22, 0, 0, 0, 1, 0, -1, 0, -2); // i shape */
+  /* SHPCRTR(23, -1, 0, 0, 0, 0, 1, 1, 1); // s shape */
+  /* SHPCRTR(24, 0, 0, 1, 0, 0, 1, -1, 1); // z shape */
+  /* SHPCRTR(25, 0, 0, 0, -1, 0, 1, 1, 1); // L shape */
+  /* SHPCRTR(26, 0, 0, 0, -1, 0, 1, -1, 1); // J shape */
 
   for (int i=0;i<gridheight;i++){
     for (int j=0;j<gridwidth;j++){
@@ -201,10 +225,13 @@ if (SDL_Init(SDL_INIT_VIDEO) < 0){
                   break;
                 case SDL_KEYDOWN:
                   /* printf("keys are down"); */
+                  if(event.key.keysym.sym == SDLK_LEFT || event.key.keysym.sym == SDLK_RIGHT){
+                    lastslide -= 1;
+                  }
                   if (event.key.keysym.sym == SDLK_UP) {
                     // Up Arrow
                     lastslide = fps;
-                  } else if (event.key.keysym.sym == SDLK_DOWN && fps - lastMove > fastfall && !collisionCheck(grid, blockPosX, blockPos, shapes[currentShape])) {
+                  } else if (event.key.keysym.sym == SDLK_DOWN && fps - lastMove > fastfall && !collisionCheck(grid, blockPosX, blockPos, shapes[currentShape]) && !collisionCheck(grid, blockPosX, blockPos+1, shapes[currentShape])) {
                     // Down Arrow
                     blockPos++;
                     lastslide = fps;
@@ -232,11 +259,7 @@ if (SDL_Init(SDL_INIT_VIDEO) < 0){
     if(grid[2][0]==1){gaming=false;}
 
     SDL_Delay(50);
-    drawBlock(blockPosX, blockPos, shapes[currentShape]);
-
-    if(fps % 7 == 0){
-      fastupdate:
-      // spawn block in 3rd column
+    drawBlock(blockPosX, blockPos-1, shapes[currentShape]);
       for (int i=0;i<gridheight;i++){
         int a = 0;
         for (int j=0;j<gridwidth;j++){
@@ -256,7 +279,12 @@ if (SDL_Init(SDL_INIT_VIDEO) < 0){
           }
         }
       }
-      drawBlock(blockPosX, blockPos, shapes[currentShape]);
+    drawBlock(blockPosX, blockPos-1, shapes[currentShape]);
+
+    if(fps % 7 == 0){
+      fastupdate:
+      // spawn block in 3rd column
+      /* drawBlock(blockPosX, blockPos, shapes[currentShape]); */
 
       /* fallingBlock[blockPosX][0+blockPos+1] = 1; */
       /* fallingBlock[blockPosX][1+blockPos+1] = 1; */
@@ -278,7 +306,7 @@ if (SDL_Init(SDL_INIT_VIDEO) < 0){
     if(collisionCheck(grid, blockPosX, blockPos, shapes[currentShape]) && fps - lastslide > slidetime) {
       onFloor = false;
       addBackgroundBlock(blockPosX, blockPos-1, shapes[currentShape]);
-      blockPos=1;
+      blockPos=5;
       blockPosX=4;
       currentShape = rand() % 7;
       if(collisionCheck(grid, blockPosX, blockPos+1, shapes[currentShape])){
@@ -336,6 +364,6 @@ if (SDL_Init(SDL_INIT_VIDEO) < 0){
   SDL_DestroyWindow(window);
   SDL_DestroyRenderer(renderer);
   SDL_Quit();
-  return EXIT_SUCCESS;
+  /* return EXIT_SUCCESS; */
   return 0;
 }
