@@ -69,17 +69,17 @@ for (int i=0;i<4;i++){\
 
 void addBackgroundBlock(int x, int y, struct shape shape) {
   int a = 0;
-  /* recurse: */
-  if(!collisionCheck(grid, x, y+1, shape) && !collisionCheck(grid, x, y-1, shape) && !(a==10)){
+  recurse:
+  if(collisionCheck(grid, x, y-a, shape)){
     /* grid[x][y]=1; */
     /* grid[x][y+1]=1; */
-    DRW(1, 0, -1)
-    /* a++; */
-    /* goto recurse; */
+    /* DRW(1, 0, -1) */
+    a++;
+    goto recurse;
   } else {
     /* grid[x][y]=1; */
     /* grid[x][y-1]=1; */
-    DRW(1, 0, 0)
+    DRW(1, 0, 0-a)
   }
 }
 
@@ -245,13 +245,13 @@ int main(int argc, char *argv[]) {
                   } else if (event.key.keysym.sym == SDLK_LEFT && fps - lastMove > das && !collisionCheck(grid, blockPosX-1, blockPos -1, shapes[currentShape])) {
                     // Left Arrow
                     blockPosX-=1;
-                    lastslide -= 1;
+                    lastslide = fps;
                     lastMove = fps;
                     goto fastupdate;
                   } else if (event.key.keysym.sym == SDLK_RIGHT && fps - lastMove > das && !collisionCheck(grid,blockPosX+1,blockPos -1, shapes[currentShape])) {
                     // Right Arrow
                     blockPosX+=1;
-                    lastslide -= 1;
+                    lastslide = fps;
                     lastMove = fps;
                     goto fastupdate;
                   } else if (event.key.keysym.sym == SDLK_x){
@@ -260,13 +260,16 @@ int main(int argc, char *argv[]) {
                     } else {
                       currentShape+=7;
                     }
+                    printf("rotating: %d \n ", currentShape);
                     goto fastupdate;
                   } else if (event.key.keysym.sym == SDLK_z){
-                    if(currentShape<8){
+                    if(currentShape<7){
                       currentShape +=21;
                     } else {
                       currentShape-=7;
                     }
+                    printf("rotating: %d \n ", currentShape);
+                    goto fastupdate;
                   }
                   break;
             }
