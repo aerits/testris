@@ -70,16 +70,16 @@ for (int i=0;i<4;i++){\
 void addBackgroundBlock(int x, int y, struct shape shape) {
   int a = 0;
   /* recurse: */
-  if(!collisionCheck(grid, x, y, shape) && !(a==10)){
+  if(!collisionCheck(grid, x, y+1, shape) && !collisionCheck(grid, x, y-1, shape) && !(a==10)){
     /* grid[x][y]=1; */
     /* grid[x][y+1]=1; */
-    DRW(1, 0, 0)
+    DRW(1, 0, -1)
     /* a++; */
     /* goto recurse; */
   } else {
     /* grid[x][y]=1; */
     /* grid[x][y-1]=1; */
-    DRW(1, 0, 0-a)
+    DRW(1, 0, 0)
   }
 }
 
@@ -165,29 +165,29 @@ int main(int argc, char *argv[]) {
   SHPCRTR(4, 0, 0, -1, 0, 1, 0, 1, -1); // L shape
   SHPCRTR(5, 0, 0, -1, 0, 1, 0, -1, -1); // J shape
 
-  /* SHPCRTR(6, 0, 0, 1, 0, 0, -1, -1, 0); // t shape */
-  /* SHPCRTR(7, 0, 0, 1, 0, 1, 1, 0, 1); // o shape */
-  /* SHPCRTR(8, 0, 0, 0, 1, 0, -1, 0, -2); // i shape */
-  /* SHPCRTR(9, -1, 0, 0, 0, 0, 1, 1, 1); // s shape */
-  /* SHPCRTR(10, 0, 0, 1, 0, 0, 1, -1, 1); // z shape */
-  /* SHPCRTR(11, 0, 0, 0, -1, 0, 1, 1, 1); // L shape */
-  /* SHPCRTR(12, 0, 0, 0, -1, 0, 1, -1, 1); // J shape */
+  SHPCRTR(7, 0, 0, 1, 0, 0, 1, 0, -1); // t shape
+  SHPCRTR(8, 0, 0, 1, 0, 1, 1, 0, 1); // o shape
+  SHPCRTR(9, 0, 0, 0, 1, 0, -1, 0, -2); // i shape
+  /* SHPCRTR(10, -1, 0, 0, 0, 0, 1, 1, 1); // s shape */
+  /* SHPCRTR(11, 0, 0, 1, 0, 0, 1, -1, 1); // z shape */
+  /* SHPCRTR(12, 0, 0, 0, -1, 0, 1, 1, 1); // L shape */
+  /* SHPCRTR(13, 0, 0, 0, -1, 0, 1, -1, 1); // J shape */
 
-  /* SHPCRTR(13, 0, 0, 1, 0, 0, -1, -1, 0); // t shape */
-  /* SHPCRTR(14, 0, 0, 1, 0, 1, 1, 0, 1); // o shape */
-  /* SHPCRTR(15, 0, 0, 0, 1, 0, -1, 0, -2); // i shape */
-  /* SHPCRTR(16, -1, 0, 0, 0, 0, 1, 1, 1); // s shape */
-  /* SHPCRTR(17, 0, 0, 1, 0, 0, 1, -1, 1); // z shape */
-  /* SHPCRTR(18, 0, 0, 0, -1, 0, 1, 1, 1); // L shape */
-  /* SHPCRTR(19, 0, 0, 0, -1, 0, 1, -1, 1); // J shape */
+  SHPCRTR(14, 0, 0, 1, 0, 0, 1, -1, 0); // t shape
+  SHPCRTR(15, 0, 0, 1, 0, 1, 1, 0, 1); // o shape
+  SHPCRTR(16, -1, 0, 0, 0, 1, 0, 2, 0); // i shape
+  /* SHPCRTR(17, -1, 0, 0, 0, 0, 1, 1, 1); // s shape */
+  /* SHPCRTR(18, 0, 0, 1, 0, 0, 1, -1, 1); // z shape */
+  /* SHPCRTR(19, 0, 0, 0, -1, 0, 1, 1, 1); // L shape */
+  /* SHPCRTR(20, 0, 0, 0, -1, 0, 1, -1, 1); // J shape */
 
-  /* SHPCRTR(20, 0, 0, 1, 0, 0, -1, -1, 0); // t shape */
-  /* SHPCRTR(21, 0, 0, 1, 0, 1, 1, 0, 1); // o shape */
-  /* SHPCRTR(22, 0, 0, 0, 1, 0, -1, 0, -2); // i shape */
-  /* SHPCRTR(23, -1, 0, 0, 0, 0, 1, 1, 1); // s shape */
-  /* SHPCRTR(24, 0, 0, 1, 0, 0, 1, -1, 1); // z shape */
-  /* SHPCRTR(25, 0, 0, 0, -1, 0, 1, 1, 1); // L shape */
-  /* SHPCRTR(26, 0, 0, 0, -1, 0, 1, -1, 1); // J shape */
+  SHPCRTR(21, 0, 0, -1, 0, 0, -1, 0, 1); // t shape
+  SHPCRTR(22, 0, 0, 1, 0, 1, 1, 0, 1); // o shape
+  SHPCRTR(23, 0, 0, 0, 1, 0, -1, 0, -2); // i shape
+  /* SHPCRTR(24, -1, 0, 0, 0, 0, 1, 1, 1); // s shape */
+  /* SHPCRTR(25, 0, 0, 1, 0, 0, 1, -1, 1); // z shape */
+  /* SHPCRTR(26, 0, 0, 0, -1, 0, 1, 1, 1); // L shape */
+  /* SHPCRTR(27, 0, 0, 0, -1, 0, 1, -1, 1); // J shape */
 
   for (int i=0;i<gridheight;i++){
     for (int j=0;j<gridwidth;j++){
@@ -228,9 +228,14 @@ int main(int argc, char *argv[]) {
                   if(event.key.keysym.sym == SDLK_LEFT || event.key.keysym.sym == SDLK_RIGHT){
                     lastslide -= 1;
                   }
-                  if (event.key.keysym.sym == SDLK_UP) {
+                  if (event.key.keysym.sym == SDLK_SPACE) {
                     // Up Arrow
                     lastslide = fps;
+                    continueGoingDown:
+                    if(!collisionCheck(grid, blockPosX, blockPos, shapes[currentShape])){
+                      blockPos++;
+                      goto continueGoingDown;
+                    }
                   } else if (event.key.keysym.sym == SDLK_DOWN && fps - lastMove > fastfall && !collisionCheck(grid, blockPosX, blockPos, shapes[currentShape]) && !collisionCheck(grid, blockPosX, blockPos+1, shapes[currentShape])) {
                     // Down Arrow
                     blockPos++;
@@ -249,6 +254,19 @@ int main(int argc, char *argv[]) {
                     lastslide -= 1;
                     lastMove = fps;
                     goto fastupdate;
+                  } else if (event.key.keysym.sym == SDLK_x){
+                    if(currentShape > 20){
+                      currentShape = currentShape+7-28;
+                    } else {
+                      currentShape+=7;
+                    }
+                    goto fastupdate;
+                  } else if (event.key.keysym.sym == SDLK_z){
+                    if(currentShape<8){
+                      currentShape +=21;
+                    } else {
+                      currentShape-=7;
+                    }
                   }
                   break;
             }
@@ -347,7 +365,12 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    // Render text
+    /* SDL_Color textColor = {0, 0, 0, 255}; // black color */
+    /* SDL_Surface *textSurface = TTF_RenderText_Solid(font, "gaming", textColor); */
+    /* SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface); */
+
+
+    /* // Render text */
     /* SDL_Rect textRect = {50, 50+blockPos, textSurface->w, textSurface->h}; // rectangle where the text is drawn */
     /* SDL_RenderCopy(renderer, textTexture, NULL, &textRect); */
 
