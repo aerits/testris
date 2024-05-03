@@ -124,21 +124,21 @@ int main(int argc, char *argv[]) {
   }
 
   // Create surface with rendered text
-  SDL_Color textColor = {0, 0, 0, 255}; // black color
-  SDL_Surface *textSurface = TTF_RenderText_Solid(font, "Hello World!", textColor);
+  /* SDL_Color textColor = {0, 0, 0, 255}; // black color */
+  /* SDL_Surface *textSurface = TTF_RenderText_Solid(font, "score: ", textColor); */
 
-  if (!textSurface) {
-    printf("Failed to create text surface: %s\n", TTF_GetError());
-    return EXIT_FAILURE;
-  }
+  /* if (!textSurface) { */
+  /*   printf("Failed to create text surface: %s\n", TTF_GetError()); */
+  /*   return EXIT_FAILURE; */
+  /* } */
 
-  // Create texture from surface
-  SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+  /* // Create texture from surface */
+  /* SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface); */
 
-  if (!textTexture){
-    printf("Failed to create text texture: %s\n", SDL_GetError());
-    return EXIT_FAILURE;
-  }
+  /* if (!textTexture){ */
+  /*   printf("Failed to create text texture: %s\n", SDL_GetError()); */
+  /*   return EXIT_FAILURE; */
+  /* } */
 
 
 
@@ -213,6 +213,7 @@ int main(int argc, char *argv[]) {
   int slidetime = 10;
   int lastslide = 0;
   int onFloor = false;
+  int score = 0;
 
   while(gaming) {
 
@@ -281,25 +282,26 @@ int main(int argc, char *argv[]) {
 
     SDL_Delay(50);
     drawBlock(blockPosX, blockPos-1, shapes[currentShape]);
-      for (int i=0;i<gridheight;i++){
-        int a = 0;
-        for (int j=0;j<gridwidth;j++){
-          fallingBlock[j][i]=0;
-          if (grid[j][i]==1){
-            a++;
-          }
-          /* printf("%d ", grid[j][i]); */
+    for (int i=0;i<gridheight;i++){
+      int a = 0;
+      for (int j=0;j<gridwidth;j++){
+        fallingBlock[j][i]=0;
+      if (grid[j][i]==1){
+          a++;
         }
-        /* printf("\n"); */
-        if(a==10){
-          // clear the line
-          for(int k=0;i-k>0;k++){
-            for (int j=0;j<gridwidth;j++){
-              grid[j][i-k] = grid[j][i-k-1];
-            }
+        /* printf("%d ", grid[j][i]); */
+      }
+      /* printf("\n"); */
+      if(a==10){
+        // clear the line
+        score+=100;
+        for(int k=0;i-k>0;k++){
+          for (int j=0;j<gridwidth;j++){
+            grid[j][i-k] = grid[j][i-k-1];
           }
         }
       }
+    }
     drawBlock(blockPosX, blockPos-1, shapes[currentShape]);
 
     if(fps % 7 == 0){
@@ -368,14 +370,18 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    /* SDL_Color textColor = {0, 0, 0, 255}; // black color */
-    /* SDL_Surface *textSurface = TTF_RenderText_Solid(font, "gaming", textColor); */
-    /* SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface); */
+    char str[20];
+
+    sprintf(str, "%i", score);
+
+    SDL_Color textColor = {0, 0, 0, 255}; // black color
+    SDL_Surface *textSurface = TTF_RenderText_Solid(font, str, textColor);
+    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
 
 
-    /* // Render text */
-    /* SDL_Rect textRect = {50, 50+blockPos, textSurface->w, textSurface->h}; // rectangle where the text is drawn */
-    /* SDL_RenderCopy(renderer, textTexture, NULL, &textRect); */
+    // Render text
+    SDL_Rect textRect = {400, 50, textSurface->w, textSurface->h}; // rectangle where the text is drawn
+    SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
 
     SDL_RenderPresent(renderer);
 
